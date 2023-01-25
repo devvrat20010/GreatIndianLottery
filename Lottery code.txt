@@ -1,0 +1,31 @@
+pragma solidity >0.4.18;
+
+contract greatindianlottery{
+       mapping(address =>uint256)public winnings;
+       address[] internal lotterynum;
+       uint internal ticketCount=0;
+       uint public randomNum=0;
+       address public latestWinner;
+
+        function Buy() public payable{
+         require(msg.value==100000000000000000);
+         lotterynum.push(msg.sender);
+         ticketCount++;
+        }
+        function Withdraw()public{
+         require(winnings[msg.sender]>0);
+          uint256 amountToWithdraw = winnings[msg.sender];
+          winnings[msg.sender]=0;
+          amountToWithdraw*=100000000000000000;
+          msg.sender.transfer(amountToWithdraw);
+        }
+        function chooseWin() public {
+        require(ticketCount > 0);
+        randomNum = uint(blockhash(block.number-1))%ticketCount;
+        latestWinner = lotterynum[randomNum];
+        winnings[latestWinner]=ticketCount;
+        ticketCount = 0;
+        
+        delete lotterynum;
+        }
+}
